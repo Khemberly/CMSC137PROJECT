@@ -22,7 +22,7 @@ Compile the main java files in the root directory of the repository:
 $ javac *.java
 ```
 
-The ending directories of the root folder would like this:
+The ending directories of the root folder would look like this:
 
 ```
 com/
