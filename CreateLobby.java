@@ -1,14 +1,25 @@
 import proto.TcpPacketProtos.*;
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
+import java.util.*;
 
-public class TCPChat {
-  public static void main(String[] args) {
+public class CreateLobby {
+  String lobbyId;
+
+  public CreateLobby() {
     try {
       // variables
-      String lobbyId;
-      int choice = 0;
+      Scanner get = new Scanner(System.in);
+      int maxPlayers = 0;
+
+      // get max players
+      while (maxPlayers < 3 || maxPlayers > 16) {
+        System.out.println("\nHow many players can join the lobby? (3-16 only)");
+        System.out.print(">> ");
+        maxPlayers = get.nextInt();
+        // error
+        if (maxPlayers < 3 || maxPlayers > 16) System.out.println("Invalid number of players.");
+      }
 
       // connect socket to 202.92.144.45/80
       Socket server = new Socket("202.92.144.45", 80);
@@ -16,17 +27,13 @@ public class TCPChat {
       InputStream in = server.getInputStream();
       System.out.println("Just connected to " + server.getRemoteSocketAddress());    
 
-      // create packet
-      TcpPacket.Builder packet = TcpPacket.newBuilder();
-      packet.setType(TcpPacket.PacketType.CONNECT);
-
       // create lobby packet
       TcpPacket.CreateLobbyPacket.Builder lobby = TcpPacket.CreateLobbyPacket.newBuilder();
       lobby.setType(TcpPacket.PacketType.CREATE_LOBBY);
-      lobby.setMaxPlayers(4);
+      lobby.setMaxPlayers(maxPlayers);
 
       // send lobby packet bytes
-      out.write(lobby.build().toByteArray())
+      out.write(lobby.build().toByteArray());
       
       // get reply
       byte[] lobbyData = new byte[1024];
@@ -36,19 +43,14 @@ public class TCPChat {
       lobbyData = Arrays.copyOf(lobbyData, count);
       lobbyId = TcpPacket.CreateLobbyPacket.parseFrom(lobbyData).getLobbyId();
       System.out.println(lobbyId);
-
+      
     } catch(IOException e) { // error cannot connect to server
       e.printStackTrace();
       System.out.println("Cannot find (or disconnected from) Server");
    }
   }
-}
 
-// public void println(String text) {System.out.println(text);} // easier printing
-// public void print(String text) {System.out.print(text);} // easier printing
-// public void print_menu() {
-//   println("What do you wish to do?");
-//   println("[1] Create a chat lobby");
-//   println("[2] Join a chat lobby");
-//   print(">>> ");
-// }
+  public String getLobbyId() {
+    return this.lobbyId;
+  }
+}
