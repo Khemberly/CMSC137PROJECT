@@ -6,7 +6,7 @@ import java.util.*;
 public class CreateLobby {
   String lobbyId;
 
-  public CreateLobby() {
+  public CreateLobby(Socket server, DataOutputStream out, InputStream in) {
     try {
       // variables
       Scanner get = new Scanner(System.in);
@@ -20,12 +20,6 @@ public class CreateLobby {
         // error
         if (maxPlayers < 3 || maxPlayers > 16) System.out.println("Invalid number of players.");
       }
-
-      // connect socket to 202.92.144.45/80
-      Socket server = new Socket("202.92.144.45", 80);
-      DataOutputStream out = new DataOutputStream(server.getOutputStream());
-      InputStream in = server.getInputStream();
-      System.out.println("Just connected to " + server.getRemoteSocketAddress());    
 
       // create lobby packet
       TcpPacket.CreateLobbyPacket.Builder lobby = TcpPacket.CreateLobbyPacket.newBuilder();
@@ -43,14 +37,12 @@ public class CreateLobby {
       lobbyData = Arrays.copyOf(lobbyData, count);
       lobbyId = TcpPacket.CreateLobbyPacket.parseFrom(lobbyData).getLobbyId();
       System.out.println(lobbyId);
-      
-    } catch(IOException e) { // error cannot connect to server
-      e.printStackTrace();
-      System.out.println("Cannot find (or disconnected from) Server");
+
+    } catch(IOException e) { // server error
+      System.out.println("Server returned an error.");
    }
   }
 
-  public String getLobbyId() {
-    return this.lobbyId;
-  }
+  // getters
+  public String getLobbyId() {return this.lobbyId;}
 }
