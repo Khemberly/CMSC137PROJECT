@@ -32,6 +32,11 @@ public class Main {
 
             // menu
             while (choice != 3) {
+                // clear data
+                get = new Scanner(System.in);;
+                choice = 0;
+
+                // show
                 System.out.println("\nWhat do you wish to do?");
                 System.out.println("[1] Create a Chat Lobby");
                 System.out.println("[2] Join a Chat Lobby");
@@ -65,8 +70,9 @@ public class Main {
                 }
             }
 
-            // close scanner
+            // close instances
             get.close();
+            server.close();
 
         } catch(IOException e) { // error cannot connect to server
             System.out.println("Cannot find (or disconnected from) Server");

@@ -36,7 +36,6 @@ public class CreateLobby {
       // parse reply
       lobbyData = Arrays.copyOf(lobbyData, count);
       lobbyId = TcpPacket.CreateLobbyPacket.parseFrom(lobbyData).getLobbyId();
-      System.out.println(lobbyId);
 
     } catch(IOException e) { // server error
       System.out.println("Server returned an error.");
