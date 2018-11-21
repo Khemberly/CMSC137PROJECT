@@ -39,4 +39,11 @@ proto/
 .gitignore
 protobuf-java-3.6.1.jar
 README.md
-TCPChat.java
+*.java // all java files needed
+```
+
+Then run the Main file.
+
+```
+$ java Main
+```
