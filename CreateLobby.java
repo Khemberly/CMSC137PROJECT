@@ -1,4 +1,5 @@
-import proto.TcpPacketProtos.*;
+import proto.TcpPacketProtos.TcpPacket.CreateLobbyPacket;
+import proto.TcpPacketProtos.TcpPacket.PacketType;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -22,8 +23,8 @@ public class CreateLobby {
       }
 
       // create lobby packet
-      TcpPacket.CreateLobbyPacket.Builder lobby = TcpPacket.CreateLobbyPacket.newBuilder();
-      lobby.setType(TcpPacket.PacketType.CREATE_LOBBY);
+      CreateLobbyPacket.Builder lobby = CreateLobbyPacket.newBuilder();
+      lobby.setType(PacketType.CREATE_LOBBY);
       lobby.setMaxPlayers(maxPlayers);
 
       // send lobby packet bytes
@@ -35,7 +36,7 @@ public class CreateLobby {
       
       // parse reply
       lobbyData = Arrays.copyOf(lobbyData, count);
-      lobbyId = TcpPacket.CreateLobbyPacket.parseFrom(lobbyData).getLobbyId();
+      lobbyId = CreateLobbyPacket.parseFrom(lobbyData).getLobbyId();
 
     } catch(IOException e) { // server error
       System.out.println("Server returned an error.");
