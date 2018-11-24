@@ -1,5 +1,4 @@
-import proto.TcpPacketProtos.*;
-import proto.PlayerProtos.*;
+import proto.PlayerProtos.Player;
 import java.io.*;
 import java.net.*;
 import java.util.*;

@@ -1,5 +1,10 @@
-import proto.TcpPacketProtos.*;
-import proto.PlayerProtos.*;
+import proto.TcpPacketProtos.TcpPacket.DisconnectPacket;
+import proto.TcpPacketProtos.TcpPacket.PlayerListPacket;
+import proto.TcpPacketProtos.TcpPacket.ConnectPacket;
+import proto.TcpPacketProtos.TcpPacket.PacketType;
+import proto.TcpPacketProtos.TcpPacket.ChatPacket;
+import proto.TcpPacketProtos.TcpPacket;
+import proto.PlayerProtos.Player;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -13,14 +18,15 @@ public class Receive extends Thread {
 
     public void run() {
         // some constants
-        final TcpPacket.PacketType DISCONNECT = TcpPacket.PacketType.DISCONNECT;
-        final TcpPacket.PacketType CONNECT = TcpPacket.PacketType.CONNECT;
-        final TcpPacket.PacketType CREATE_LOBBY = TcpPacket.PacketType.CREATE_LOBBY;
-        final TcpPacket.PacketType CHAT = TcpPacket.PacketType.CHAT;
-        final TcpPacket.PacketType PLAYER_LIST = TcpPacket.PacketType.PLAYER_LIST;
-        final TcpPacket.PacketType ERR_LDNE = TcpPacket.PacketType.ERR_LDNE;
-        final TcpPacket.PacketType ERR_LFULL = TcpPacket.PacketType.ERR_LFULL;
-        final TcpPacket.PacketType ERR = TcpPacket.PacketType.ERR;
+        final PacketType DISCONNECT = PacketType.DISCONNECT;
+        final PacketType CONNECT = PacketType.CONNECT;
+        final PacketType CREATE_LOBBY = PacketType.CREATE_LOBBY;
+        final PacketType CHAT = PacketType.CHAT;
+        final PacketType PLAYER_LIST = PacketType.PLAYER_LIST;
+        final PacketType ERR_LDNE = PacketType.ERR_LDNE;
+        final PacketType ERR_LFULL = PacketType.ERR_LFULL;
+        final PacketType ERR = PacketType.ERR;
+        final DisconnectPacket.Update NORMAL = DisconnectPacket.Update.NORMAL;
 
         while (true) {
             try {
@@ -33,29 +39,29 @@ public class Receive extends Thread {
                 switch(TcpPacket.parseFrom(chatData).getType()) {
                     case DISCONNECT: {
                         // get disconnect data then print
-                        TcpPacket.DisconnectPacket packet = TcpPacket.DisconnectPacket.parseFrom(chatData);
+                        DisconnectPacket packet = DisconnectPacket.parseFrom(chatData);
+                        DisconnectPacket.Update reason = packet.getUpdate();
                         String playerName = packet.getPlayer().getName();
-                        TcpPacket.DisconnectPacket.Update reason = packet.getUpdate();
 
-                        if (reason == TcpPacket.DisconnectPacket.Update.NORMAL) {System.out.println(playerName + " has disconnected from the lobby.");} 
+                        if (reason == NORMAL) {System.out.println(playerName + " has disconnected from the lobby.");} 
                         else {System.out.println(playerName + " has lost connection.");}
                         break;}
                     case CONNECT: {
                         // get connection update then print
-                        String playerName = TcpPacket.ConnectPacket.parseFrom(chatData).getPlayer().getName();
+                        String playerName = ConnectPacket.parseFrom(chatData).getPlayer().getName();
                         System.out.println(playerName + " has connected to the lobby."); break;}
                     case CHAT: {
                         // get chat data then print
-                        String playerName = TcpPacket.ChatPacket.parseFrom(chatData).getPlayer().getName();
-                        String message = TcpPacket.ChatPacket.parseFrom(chatData).getMessage();
+                        String playerName = ChatPacket.parseFrom(chatData).getPlayer().getName();
+                        String message = ChatPacket.parseFrom(chatData).getMessage();
                         System.out.println(playerName + ": " + message); break;}
                     case PLAYER_LIST: {
                         // get players then print
-                        List<Player> playerlist = TcpPacket.PlayerListPacket.parseFrom(chatData).getPlayerListList();
+                        List<Player> playerlist = PlayerListPacket.parseFrom(chatData).getPlayerListList();
                         System.out.println("Players:");
                         for (Player player : playerlist) System.out.print(player.getName() + " ");
-                    }
-                    default: {System.out.println("hi");break;}
+                        System.out.println(""); break;}
+                    default: {System.out.println("Should not go here");break;}
                 }
 
             } catch(IOException e) { // error cannot connect to server
